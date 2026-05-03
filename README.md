@@ -27,7 +27,7 @@ If this matters to you and you want to host it, fork it, run it for your country
 Requires Node.js 18+.
 
 ```bash
-git clone <this-repo> patientenstem
+git clone https://github.com/JoostBoer/patientenstem.git
 cd patientenstem
 npm install
 cp .env.example .env
