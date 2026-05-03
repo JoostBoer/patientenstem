@@ -1,0 +1,45 @@
+<%- include('partials/head', { title: null }) %>
+
+<section class="hero">
+  <div class="container narrow hero-inner">
+    <p class="hero-eyebrow"><%= t('home.eyebrow') %></p>
+    <h1 class="hero-title"><%= t('home.titel') %></h1>
+    <p class="hero-lead"><%= t('home.lead') %></p>
+    <p class="hero-meta"><%= t('home.meta') %></p>
+  </div>
+</section>
+
+<section class="instellingen">
+  <div class="container">
+    <h2 class="section-title"><%= t('home.sectie_titel') %></h2>
+    <p class="section-sub"><%= t('home.sectie_sub') %></p>
+
+    <ul class="kaarten">
+      <% instellingen.forEach(function(i) { %>
+        <li class="kaart">
+          <a href="/instelling/<%= i.slug %>" class="kaart-link">
+            <h3 class="kaart-naam"><%= i.naam %></h3>
+            <p class="kaart-meta">
+              <% if (i.plaats) { %><span><%= i.plaats %></span><% } %>
+              <% if (i.type) { %><span class="dot">·</span><span><%= i.type %></span><% } %>
+            </p>
+            <p class="kaart-stat">
+              <% if (i.aantal_reviews && i.aantal_reviews > 0) { %>
+                <span class="rating">★ <%= i.gemiddelde %></span>
+                <span class="muted"><%= i.aantal_reviews === 1 ? t('home.kaart_aantal_een') : t('home.kaart_aantal_meer', { n: i.aantal_reviews }) %></span>
+              <% } else { %>
+                <span class="muted"><%= t('home.kaart_geen_ervaringen') %></span>
+              <% } %>
+            </p>
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+
+    <p class="section-note">
+      <%= t('home.mis_je_instelling') %> <a href="<%= GITHUB_URL %>" target="_blank" rel="noopener"><%= t('home.open_issue') %></a> <%= t('home.of_pr') %> <code>seeds/instellingen.json</code>.
+    </p>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

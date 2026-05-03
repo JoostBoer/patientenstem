@@ -1,0 +1,82 @@
+[
+  {
+    "slug": "kastanjehof",
+    "naam": "Kastanjehof",
+    "aanbieder": "GGZ Centraal",
+    "plaats": "Hilversum / regio",
+    "type": "Kliniek (gesloten en open afdelingen)",
+    "beschrijving": "Onderdeel van GGZ Centraal. Behandelt onder meer mensen met een crisismaatregel of zorgmachtiging."
+  },
+  {
+    "slug": "ggz-centraal",
+    "naam": "GGZ Centraal",
+    "aanbieder": "GGZ Centraal",
+    "plaats": "Amersfoort en omgeving",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "Grote regionale aanbieder met meerdere klinieken en poliklinieken in Midden-Nederland."
+  },
+  {
+    "slug": "altrecht",
+    "naam": "Altrecht",
+    "aanbieder": "Altrecht GGZ",
+    "plaats": "Utrecht",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "Grote GGZ-aanbieder in de regio Utrecht."
+  },
+  {
+    "slug": "pro-persona",
+    "naam": "Pro Persona",
+    "aanbieder": "Pro Persona",
+    "plaats": "Gelderland",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "GGZ-aanbieder in Gelderland en aangrenzende regio's."
+  },
+  {
+    "slug": "parnassia",
+    "naam": "Parnassia Groep",
+    "aanbieder": "Parnassia Groep",
+    "plaats": "Den Haag, Rotterdam, Noord-Holland",
+    "type": "Landelijke GGZ-groep",
+    "beschrijving": "Een van de grootste GGZ-aanbieders van Nederland, meerdere merken en klinieken."
+  },
+  {
+    "slug": "arkin",
+    "naam": "Arkin",
+    "aanbieder": "Arkin",
+    "plaats": "Amsterdam",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "Grote GGZ-aanbieder in Amsterdam met onder meer Mentrum en Jellinek."
+  },
+  {
+    "slug": "mondriaan",
+    "naam": "Mondriaan",
+    "aanbieder": "Mondriaan",
+    "plaats": "Limburg",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "GGZ-aanbieder in Zuid-Limburg."
+  },
+  {
+    "slug": "dimence",
+    "naam": "Dimence",
+    "aanbieder": "Dimence Groep",
+    "plaats": "Overijssel",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "GGZ-aanbieder in Overijssel."
+  },
+  {
+    "slug": "ggz-friesland",
+    "naam": "GGZ Friesland",
+    "aanbieder": "GGZ Friesland",
+    "plaats": "Friesland",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "GGZ-aanbieder in de provincie Friesland."
+  },
+  {
+    "slug": "ggze",
+    "naam": "GGzE",
+    "aanbieder": "GGzE",
+    "plaats": "Eindhoven en de Kempen",
+    "type": "Geïntegreerde GGZ-aanbieder",
+    "beschrijving": "GGZ-aanbieder in Eindhoven en omgeving."
+  }
+]

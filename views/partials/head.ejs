@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="<%= locale %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' && title ? title + ' - ' : '' %><%= t('site.naam') %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : t('site.tagline') %>">
+  <meta name="referrer" content="no-referrer">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">
+      <span class="logo-mark" aria-hidden="true">·</span>
+      <span class="logo-text"><%= t('site.naam') %></span>
+    </a>
+    <nav class="site-nav">
+      <a href="/"><%= t('nav.instellingen') %></a>
+      <a href="/over"><%= t('nav.over') %></a>
+      <a href="<%= GITHUB_URL %>" target="_blank" rel="noopener"><%= t('nav.github') %></a>
+      <div class="lang-dropdown" aria-label="<%= t('footer.taal_label') %>">
+        <button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false">
+          <span class="lang-globe" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </span>
+          <span class="lang-current"><%= locale.toUpperCase() %></span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </button>
+        <ul class="lang-menu" id="langMenu" role="listbox" hidden>
+          <% locales.forEach(function(code) { %>
+            <li role="option" aria-selected="<%= locale === code ? 'true' : 'false' %>">
+              <a href="?lang=<%= code %>" class="lang-option <%= locale === code ? 'is-active' : '' %>" data-code="<%= code %>">
+                <span class="lang-code"><%= code.toUpperCase() %></span>
+                <span class="lang-name"><%= ({nl:'Nederlands',en:'English',de:'Deutsch',fr:'Français',es:'Español',it:'Italiano',pt:'Português',ja:'日本語',zh:'中文',ar:'العربية',pl:'Polski',tr:'Türkçe',ru:'Русский',ko:'한국어'})[code] || code %></span>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>
+<main>

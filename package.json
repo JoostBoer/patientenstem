@@ -1,0 +1,17 @@
+{
+  "name": "patientenstem",
+  "version": "0.1.0",
+  "description": "Open-source platform waar patiënten hun ervaringen met GGZ-instellingen kunnen delen.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node db.js --seed"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0"
+  }
+}

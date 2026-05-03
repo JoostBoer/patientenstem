@@ -1,0 +1,17 @@
+</main>
+
+<%- include('feedback-bubble') %>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>
+      <%- t('footer.regel1', { site: '<strong>' + t('site.naam') + '</strong>' }) %>
+    </p>
+    <p class="muted">
+      <%= t('footer.code_op') %> <a href="<%= GITHUB_URL %>" target="_blank" rel="noopener">GitHub</a> · <%= t('footer.licentie') %>
+    </p>
+  </div>
+</footer>
+<script src="/app.js" defer></script>
+</body>
+</html>

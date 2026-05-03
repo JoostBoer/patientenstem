@@ -1,0 +1,119 @@
+<%- include('partials/head', { title: t('nieuw.page_titel') + ' — ' + instelling.naam }) %>
+
+<section class="page-head soft">
+  <div class="container narrow">
+    <p class="crumbs"><a href="/instelling/<%= instelling.slug %>">← <%= instelling.naam %></a></p>
+    <h1 class="page-title"><%= t('nieuw.page_titel') %></h1>
+    <p class="page-lead"><%= t('nieuw.page_lead', { naam: instelling.naam }) %></p>
+  </div>
+</section>
+
+<section class="form-sectie">
+  <div class="container narrow">
+    <% if (errors && errors.length) { %>
+      <div class="banner banner-error">
+        <ul>
+          <% errors.forEach(function(e) { %><li><%= e %></li><% }); %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="post" action="/instelling/<%= instelling.slug %>/schrijven" class="form simple-form" id="reviewForm">
+
+      <div class="big-veld">
+        <label for="ervaring" class="big-label"><%= t('nieuw.ervaring_label') %></label>
+        <div class="big-textarea-wrap">
+          <textarea id="ervaring" name="ervaring" rows="9" required minlength="1" maxlength="8000" placeholder="<%= t('nieuw.ervaring_placeholder') %>"><%= values.ervaring || '' %></textarea>
+          <button type="button" class="mic-btn mic-btn-large" data-target="ervaring" data-lang="<%= locale %>" aria-label="<%= t('nieuw.mic_start') %>" title="<%= t('nieuw.mic_start') %>">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            <span class="mic-label"><%= t('nieuw.mic_start') %></span>
+          </button>
+        </div>
+        <p class="mic-status muted" id="micStatus_ervaring" aria-live="polite"></p>
+
+        <div class="voorbeelden">
+          <p class="voorbeelden-titel muted"><%= t('nieuw.voorbeelden_titel') %></p>
+          <div class="pillen">
+            <% [1,2,3,4,5].forEach(function(n) { %>
+              <button type="button" class="pil" data-prefill="<%= t('nieuw.voorbeeld_' + n) %>"><%= t('nieuw.voorbeeld_' + n) %></button>
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="ai-help-row">
+          <button type="button" class="ai-help-btn" id="aiHelpBtn" data-target="ervaring" data-lang="<%= locale %>">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path></svg>
+            <span><%= t('nieuw.ai_help_knop') %></span>
+          </button>
+        </div>
+        <div class="ai-suggestion" id="aiSuggestion" hidden>
+          <p class="muted ai-hint"><%= t('nieuw.ai_help_hint') %></p>
+          <div class="ai-suggestion-text" id="aiSuggestionText"></div>
+          <div class="ai-suggestion-actions">
+            <button type="button" class="btn btn-primary" id="aiAccept"><%= t('nieuw.ai_help_vervang') %></button>
+            <button type="button" class="btn btn-link" id="aiReject"><%= t('nieuw.ai_help_behoud') %></button>
+          </div>
+        </div>
+      </div>
+
+      <details class="details-block">
+        <summary class="details-summary">
+          <span class="details-icon" aria-hidden="true">+</span>
+          <%= t('nieuw.rating_label') %>
+          <span class="muted details-hint"><%= t('nieuw.rating_optioneel_hint') %></span>
+        </summary>
+        <div class="details-body">
+          <div class="rating-input" role="radiogroup" aria-label="<%= t('nieuw.rating_aria') %>">
+            <% for (let n = 1; n <= 5; n++) { %>
+              <label class="ster">
+                <input type="radio" name="rating" value="<%= n %>" <%= String(values.rating) === String(n) ? 'checked' : '' %>>
+                <span><%= '★'.repeat(n) %></span>
+                <span class="ster-label"><%= t('nieuw.rating_' + n) %></span>
+              </label>
+            <% } %>
+          </div>
+        </div>
+      </details>
+
+      <details class="details-block">
+        <summary class="details-summary">
+          <span class="details-icon" aria-hidden="true">+</span>
+          <%= t('nieuw.details_toggle') %>
+        </summary>
+        <div class="details-body">
+          <div class="rij">
+            <div class="veld">
+              <label for="rol" class="veld-label"><%= t('nieuw.rol_label') %></label>
+              <input type="text" id="rol" name="rol" maxlength="80" value="<%= values.rol || '' %>" placeholder="<%= t('nieuw.rol_placeholder') %>">
+            </div>
+            <div class="veld">
+              <label for="periode" class="veld-label"><%= t('nieuw.periode_label') %></label>
+              <input type="text" id="periode" name="periode" maxlength="80" value="<%= values.periode || '' %>" placeholder="<%= t('nieuw.periode_placeholder') %>">
+            </div>
+          </div>
+          <div class="veld">
+            <label for="contact_email" class="veld-label"><%= t('nieuw.email_label') %> <span class="muted"><%= t('nieuw.email_optioneel') %></span></label>
+            <input type="email" id="contact_email" name="contact_email" maxlength="200" value="<%= values.contact_email || '' %>" placeholder="<%= t('nieuw.email_placeholder') %>">
+            <p class="veld-hint"><%= t('nieuw.email_hint') %></p>
+          </div>
+        </div>
+      </details>
+
+      <div class="veld veld-honeypot" aria-hidden="true">
+        <label for="hp">Laat dit veld leeg</label>
+        <input type="text" name="hp" id="hp" tabindex="-1" autocomplete="off">
+      </div>
+
+      <p class="huisregels-zacht muted">
+        <%= t('nieuw.huisregels') %>
+      </p>
+
+      <div class="acties">
+        <button type="submit" class="btn btn-primary btn-lg"><%= t('nieuw.submit') %></button>
+        <a href="/instelling/<%= instelling.slug %>" class="btn btn-link"><%= t('nieuw.annuleer') %></a>
+      </div>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

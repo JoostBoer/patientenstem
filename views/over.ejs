@@ -1,0 +1,50 @@
+<%- include('partials/head', { title: t('over.page_titel') }) %>
+
+<section class="page-head">
+  <div class="container narrow">
+    <h1 class="page-title"><%= t('over.page_titel') %></h1>
+    <p class="page-lead"><%= t('over.page_lead') %></p>
+  </div>
+</section>
+
+<section class="prose-sectie">
+  <div class="container narrow prose">
+
+    <h2><%= t('over.h_waarom') %></h2>
+    <p><%= t('over.p_waarom_1') %></p>
+    <p><%= t('over.p_waarom_2') %></p>
+
+    <h2><%= t('over.h_wat_wel') %></h2>
+    <ul>
+      <li><%= t('over.wat_wel_1') %></li>
+      <li><%= t('over.wat_wel_2') %></li>
+      <li><%= t('over.wat_wel_3') %></li>
+    </ul>
+
+    <h2><%= t('over.h_wat_niet') %></h2>
+    <ul>
+      <li><%- t('over.wat_niet_1', {
+        pvp: '<a href="https://www.pvp.nl" target="_blank" rel="noopener">Patiëntvertrouwenspersoon (PVP)</a>',
+        igj: '<a href="https://www.igj.nl" target="_blank" rel="noopener">Inspectie Gezondheidszorg en Jeugd</a>'
+      }) %></li>
+      <li><%= t('over.wat_niet_2') %></li>
+      <li><%= t('over.wat_niet_3') %></li>
+    </ul>
+
+    <h2><%= t('over.h_bijdragen') %></h2>
+    <ul>
+      <li><%- t('over.bijdragen_1') %></li>
+      <li><%- t('over.bijdragen_2') %></li>
+      <li><%- t('over.bijdragen_3') %></li>
+    </ul>
+
+    <h2><%= t('over.h_crisis') %></h2>
+    <p><%- t('over.p_crisis') %></p>
+
+    <h2><%= t('over.h_contact') %></h2>
+    <p><%- t('over.p_contact', { github: GITHUB_URL }) %></p>
+
+  </div>
+</section>
+
+<%- include('partials/foot') %>
