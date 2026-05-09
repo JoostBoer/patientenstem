@@ -2,6 +2,12 @@
 
 Fijn dat je wilt meedenken. Een paar dingen om te weten voor je begint.
 
+## Waar dit project leeft
+
+Patiëntenstem draait op één centrale plek: **[ourpatientvoice.org](https://ourpatientvoice.org/)**. Daar delen patiënten hun verhalen, daar landen jouw bijdragen na een merge.
+
+[@JoostBoer](https://github.com/JoostBoer) onderhoudt de repo en reviewt elke pull request. Geen losse forks die hun eigen kant op gaan — één gedeelde plek voor patiëntenstemmen, zodat verhalen vindbaar blijven en de moderatie consistent is.
+
 ## Het doel
 
 Patiëntenstem is gemaakt om de stem van patiënten in de psychiatrie hoorbaar te maken - niet om persoonlijke wraakacties te faciliteren, niet om de zorg in z'n geheel slecht te maken, en niet om een commercieel reviewplatform te worden.
@@ -12,7 +18,7 @@ Bij elke beslissing - code, design, copy, moderatiebeleid - is de vraag: helpt d
 
 ### Een instelling toevoegen
 
-Edit `seeds/instellingen.json`. Voeg een regel toe en stuur een PR. Sluit feitelijke beschrijving (locatie, type) gebruik geen waardeoordelen.
+Edit `seeds/instellingen.json`. Voeg een regel toe en stuur een PR. Houd de beschrijving feitelijk (locatie, type) en gebruik geen waardeoordelen. Na merge verschijnt de instelling op [ourpatientvoice.org](https://ourpatientvoice.org/).
 
 ### Een bug melden
 

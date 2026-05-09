@@ -2,15 +2,15 @@
 
 > An open-source platform where psychiatric patients can share their experiences. Anonymously. With voice or text. AI helps if you want it. Eleven languages out of the box.
 
+**Live at [ourpatientvoice.org](https://ourpatientvoice.org/)** — that is the canonical home of this project. The site is where patients actually share stories; this repository is the code that runs it.
+
 Patients in psychiatric care are not always heard. Especially not when admitted, or under involuntary treatment. Most clinicians have good intentions, but good intentions don't prevent harm. Patient stories can.
 
-This is the software. The mission is bigger than the code.
+## How this project works
 
-## Looking for someone to pick this up
+The project runs as a single, central instance at [ourpatientvoice.org](https://ourpatientvoice.org/). [@JoostBoer](https://github.com/JoostBoer) maintains the repository and reviews every contribution. Pull requests that are merged here go live on the site.
 
-This was built in one Sunday morning by a person who had a hard experience in a Dutch psychiatric clinic. The intention is to give patients a voice without forcing them through a complaint procedure or a lawyer. The code is here. The licence is MIT.
-
-If this matters to you and you want to host it, fork it, run it for your country or your context: **please do**. Open an issue if you'd like to talk first.
+If you want to help — by adding a provider, translating a language, fixing a bug, or improving the experience — open an issue or a PR. The code is MIT-licensed, but the goal is one shared home for patient voices, not many scattered copies.
 
 ## What it does
 
@@ -22,7 +22,7 @@ If this matters to you and you want to host it, fork it, run it for your country
 - No accounts, no tracking, no advertising, no external scripts beyond Google Fonts (removable)
 - Honeypot anti-spam, takedown request flow for moderation
 
-## Run it locally
+## Run it locally (for contributors)
 
 Requires Node.js 18+.
 
@@ -55,7 +55,7 @@ npm run seed
 
 ## Adding a provider
 
-Edit `seeds/instellingen.json`, add a row, send a PR. Or open an issue.
+Edit `seeds/instellingen.json`, add a row, send a PR. Or open an issue. Once merged, the provider appears on [ourpatientvoice.org](https://ourpatientvoice.org/).
 
 ## Adding a language
 
@@ -67,17 +67,7 @@ Auto-translate is also available:
 node scripts/translate-locales.js de fr es ja
 ```
 
-This translates `locales/nl.json` to the requested codes via Anthropic API. Review the output before committing.
-
-## Deployment
-
-Anything that runs Node and has persistent disk works. The whole app is one process and a SQLite file. Suggested:
-
-- VPS with `pm2` or systemd
-- Fly.io / Railway / Render
-- Run behind a reverse proxy (nginx / Caddy) for HTTPS
-
-Set `ANTHROPIC_API_KEY` in environment for AI rewrite. Set `GITHUB_URL` to your repo URL.
+This translates `locales/nl.json` to the requested codes via Anthropic API. Review the output before committing. Merged translations go live on [ourpatientvoice.org](https://ourpatientvoice.org/).
 
 ## Moderation
 
