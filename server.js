@@ -11,7 +11,7 @@ if (fs.existsSync(envPath)) {
   }
 }
 
-const { db, seedInstellingen } = require('./db');
+const { db, seedInstellingen, seedBehandelaars } = require('./db');
 const i18n = require('./i18n');
 
 const app = express();
@@ -39,6 +39,35 @@ const stmts = {
   `),
   instellingBySlug: db.prepare(`SELECT * FROM instellingen WHERE slug = ?`),
   alleSlugs: db.prepare(`SELECT slug FROM instellingen ORDER BY naam`),
+
+  behandelaarBySlug: db.prepare(`SELECT * FROM behandelaars WHERE slug = ?`),
+  alleBehandelaarSlugs: db.prepare(`SELECT slug FROM behandelaars ORDER BY naam`),
+  behandelaarsForInstelling: db.prepare(`
+    SELECT b.*,
+      (SELECT COUNT(*) FROM reviews r WHERE r.behandelaar_id = b.id AND r.status = 'gepubliceerd') AS aantal_reviews,
+      (SELECT ROUND(AVG(r.rating), 1) FROM reviews r WHERE r.behandelaar_id = b.id AND r.status = 'gepubliceerd') AS gemiddelde
+    FROM behandelaars b
+    WHERE b.instelling_id = ?
+    ORDER BY b.naam
+  `),
+  reviewsForBehandelaar: db.prepare(`
+    SELECT * FROM reviews
+    WHERE behandelaar_id = ? AND status = 'gepubliceerd'
+    ORDER BY created_at DESC
+  `),
+  insertReviewBehandelaar: db.prepare(`
+    INSERT INTO reviews (behandelaar_id, instelling_id, rating, titel, ervaring, rol, periode, contact_email)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `),
+  weerwoordenForReview: db.prepare(`
+    SELECT * FROM weerwoorden
+    WHERE review_id = ? AND status = 'gepubliceerd'
+    ORDER BY created_at
+  `),
+  insertWeerwoord: db.prepare(`
+    INSERT INTO weerwoorden (review_id, tekst, identiteit_notitie, contact_email)
+    VALUES (?, ?, ?, ?)
+  `),
   reviewsForInstelling: db.prepare(`
     SELECT * FROM reviews
     WHERE instelling_id = ? AND status = 'gepubliceerd'
@@ -72,6 +101,16 @@ if (db.prepare('SELECT COUNT(*) AS n FROM instellingen').get().n === 0) {
   const n = seedInstellingen();
   console.log(`First boot: seeded ${n} instellingen`);
 }
+if (db.prepare('SELECT COUNT(*) AS n FROM behandelaars').get().n === 0) {
+  const m = seedBehandelaars();
+  if (m) console.log(`First boot: seeded ${m} behandelaars`);
+}
+
+// Attach each review's published right-of-reply replies (the clinician's weerwoord).
+function withWeerwoorden(reviews) {
+  for (const r of reviews) r.weerwoorden = stmts.weerwoordenForReview.all(r.id);
+  return reviews;
+}
 
 app.get('/', (req, res) => {
   const instellingen = stmts.alleInstellingen.all();
@@ -82,56 +121,184 @@ app.get('/over', (req, res) => {
   res.render('over');
 });
 
-app.get('/instelling/:slug', (req, res, next) => {
-  const instelling = stmts.instellingBySlug.get(req.params.slug);
-  if (!instelling) return next();
-  const reviews = stmts.reviewsForInstelling.all(instelling.id);
-  const gemiddelde = reviews.length
-    ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
-    : null;
-  res.render('instelling', { instelling, reviews, gemiddelde, posted: req.query.posted === '1' });
-});
-
-app.get('/instelling/:slug/schrijven', (req, res, next) => {
-  const instelling = stmts.instellingBySlug.get(req.params.slug);
-  if (!instelling) return next();
-  res.render('nieuw-review', { instelling, errors: [], values: {} });
-});
-
-app.post('/instelling/:slug/schrijven', (req, res, next) => {
-  const instelling = stmts.instellingBySlug.get(req.params.slug);
-  if (!instelling) return next();
-
-  const { rating, ervaring, rol, periode, contact_email, hp } = req.body;
-
-  if (hp && hp.trim() !== '') return res.redirect(`${res.locals.url('/instelling/' + instelling.slug)}?posted=1`);
-
-  const t = res.locals.t;
+// Shared review validation + parsing for both institution and clinician forms.
+function parseReview(req, t) {
+  const { rating, ervaring, rol, periode, contact_email } = req.body;
   const errors = [];
   let r = parseInt(rating, 10);
   if (!r || r < 1 || r > 5) r = null;
   if (!ervaring || ervaring.trim().length < 10) errors.push(t('nieuw.fout_te_kort'));
   if (ervaring && ervaring.length > 8000) errors.push(t('nieuw.fout_te_lang'));
+  return {
+    errors,
+    rating: r,
+    ervaring: (ervaring || '').trim(),
+    rol: (rol || '').trim().slice(0, 80) || null,
+    periode: (periode || '').trim().slice(0, 80) || null,
+    contact_email: (contact_email || '').trim().slice(0, 200) || null,
+    values: { rating, ervaring, rol, periode, contact_email },
+  };
+}
 
-  if (errors.length) {
-    return res.status(400).render('nieuw-review', {
-      instelling,
-      errors,
-      values: { rating, ervaring, rol, periode, contact_email },
+function gemiddeldeVan(reviews) {
+  return reviews.length
+    ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+    : null;
+}
+
+// JSON-LD for a reviewed entity, so search engines can show rich results.
+function buildJsonLd(SITE, canonical, type, naam, reviews, gemiddelde) {
+  const ld = {
+    '@context': 'https://schema.org',
+    '@type': type,
+    name: naam,
+    url: SITE + canonical,
+  };
+  if (reviews.length && gemiddelde) {
+    ld.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: gemiddelde,
+      reviewCount: reviews.filter((r) => r.rating).length,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
+  const rated = reviews.filter((r) => r.rating).slice(0, 20);
+  if (rated.length) {
+    ld.review = rated.map((r) => ({
+      '@type': 'Review',
+      reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+      datePublished: (r.created_at || '').slice(0, 10),
+      reviewBody: (r.ervaring || '').slice(0, 500),
+    }));
+  }
+  return ld;
+}
+
+app.get('/instelling/:slug', (req, res, next) => {
+  const instelling = stmts.instellingBySlug.get(req.params.slug);
+  if (!instelling) return next();
+  const reviews = withWeerwoorden(stmts.reviewsForInstelling.all(instelling.id));
+  const behandelaars = stmts.behandelaarsForInstelling.all(instelling.id);
+  const gemiddelde = gemiddeldeVan(reviews);
+  const canonical = res.locals.url('/instelling/' + instelling.slug);
+  res.render('instelling', {
+    instelling,
+    reviews,
+    behandelaars,
+    gemiddelde,
+    posted: req.query.posted === '1',
+    description: instelling.beschrijving || res.locals.t('home.sectie_sub'),
+    jsonLd: buildJsonLd(res.app.locals.SITE_URL, canonical, 'MedicalOrganization', instelling.naam, reviews, gemiddelde),
+  });
+});
+
+app.get('/instelling/:slug/schrijven', (req, res, next) => {
+  const instelling = stmts.instellingBySlug.get(req.params.slug);
+  if (!instelling) return next();
+  res.render('nieuw-review', { doel: doelVoorInstelling(res, instelling), errors: [], values: {} });
+});
+
+app.post('/instelling/:slug/schrijven', (req, res, next) => {
+  const instelling = stmts.instellingBySlug.get(req.params.slug);
+  if (!instelling) return next();
+  const doel = doelVoorInstelling(res, instelling);
+
+  if (req.body.hp && req.body.hp.trim() !== '') return res.redirect(`${doel.terugUrl}?posted=1`);
+
+  const p = parseReview(req, res.locals.t);
+  if (p.errors.length) {
+    return res.status(400).render('nieuw-review', { doel, errors: p.errors, values: p.values });
+  }
+  stmts.insertReview.run(instelling.id, p.rating, null, p.ervaring, p.rol, p.periode, p.contact_email);
+  res.redirect(`${doel.terugUrl}?posted=1`);
+});
+
+function doelVoorInstelling(res, instelling) {
+  return {
+    naam: instelling.naam,
+    terugUrl: res.locals.url('/instelling/' + instelling.slug),
+    actieUrl: res.locals.url('/instelling/' + instelling.slug + '/schrijven'),
+  };
+}
+
+function doelVoorBehandelaar(res, behandelaar) {
+  return {
+    naam: behandelaar.naam,
+    terugUrl: res.locals.url('/behandelaar/' + behandelaar.slug),
+    actieUrl: res.locals.url('/behandelaar/' + behandelaar.slug + '/schrijven'),
+  };
+}
+
+// ---- Clinicians (per-behandelaar reviews + right of reply) ----
+
+app.get('/behandelaar/:slug', (req, res, next) => {
+  const behandelaar = stmts.behandelaarBySlug.get(req.params.slug);
+  if (!behandelaar) return next();
+  const reviews = withWeerwoorden(stmts.reviewsForBehandelaar.all(behandelaar.id));
+  const instelling = behandelaar.instelling_id
+    ? db.prepare('SELECT * FROM instellingen WHERE id = ?').get(behandelaar.instelling_id)
+    : null;
+  const gemiddelde = gemiddeldeVan(reviews);
+  const canonical = res.locals.url('/behandelaar/' + behandelaar.slug);
+  res.render('behandelaar', {
+    behandelaar,
+    instelling,
+    reviews,
+    gemiddelde,
+    posted: req.query.posted === '1',
+    description: res.locals.t('behandelaar.meta_desc', { naam: behandelaar.naam }),
+    jsonLd: buildJsonLd(res.app.locals.SITE_URL, canonical, 'Physician', behandelaar.naam, reviews, gemiddelde),
+  });
+});
+
+app.get('/behandelaar/:slug/schrijven', (req, res, next) => {
+  const behandelaar = stmts.behandelaarBySlug.get(req.params.slug);
+  if (!behandelaar) return next();
+  res.render('nieuw-review', { doel: doelVoorBehandelaar(res, behandelaar), errors: [], values: {} });
+});
+
+app.post('/behandelaar/:slug/schrijven', (req, res, next) => {
+  const behandelaar = stmts.behandelaarBySlug.get(req.params.slug);
+  if (!behandelaar) return next();
+  const doel = doelVoorBehandelaar(res, behandelaar);
+
+  if (req.body.hp && req.body.hp.trim() !== '') return res.redirect(`${doel.terugUrl}?posted=1`);
+
+  const p = parseReview(req, res.locals.t);
+  if (p.errors.length) {
+    return res.status(400).render('nieuw-review', { doel, errors: p.errors, values: p.values });
+  }
+  stmts.insertReviewBehandelaar.run(
+    behandelaar.id, behandelaar.instelling_id || null, p.rating, null, p.ervaring, p.rol, p.periode, p.contact_email,
+  );
+  res.redirect(`${doel.terugUrl}?posted=1`);
+});
+
+// Right of reply: a clinician responds to a review. Goes to a moderation queue
+// with an identity note; shown only after a maintainer verifies the responder.
+app.get('/review/:id/weerwoord', (req, res, next) => {
+  const review = stmts.reviewById.get(req.params.id);
+  if (!review || !review.behandelaar_id) return next();
+  const behandelaar = db.prepare('SELECT * FROM behandelaars WHERE id = ?').get(review.behandelaar_id);
+  res.render('weerwoord', { review, behandelaar, ingediend: false });
+});
+
+app.post('/review/:id/weerwoord', (req, res, next) => {
+  const review = stmts.reviewById.get(req.params.id);
+  if (!review || !review.behandelaar_id) return next();
+  const behandelaar = db.prepare('SELECT * FROM behandelaars WHERE id = ?').get(review.behandelaar_id);
+
+  const tekst = (req.body.tekst || '').trim().slice(0, 8000);
+  const identiteit = (req.body.identiteit || '').trim().slice(0, 500) || null;
+  const email = (req.body.contact_email || '').trim().slice(0, 200) || null;
+  if (tekst.length < 10) {
+    return res.status(400).render('weerwoord', {
+      review, behandelaar, ingediend: false, error: res.locals.t('weerwoord.fout_te_kort'),
     });
   }
-
-  stmts.insertReview.run(
-    instelling.id,
-    r,
-    null,
-    ervaring.trim(),
-    (rol || '').trim().slice(0, 80) || null,
-    (periode || '').trim().slice(0, 80) || null,
-    (contact_email || '').trim().slice(0, 200) || null,
-  );
-
-  res.redirect(`${res.locals.url('/instelling/' + instelling.slug)}?posted=1`);
+  stmts.insertWeerwoord.run(review.id, tekst, identiteit, email);
+  res.render('weerwoord', { review, behandelaar, ingediend: true });
 });
 
 app.get('/review/:id/melden', (req, res, next) => {
@@ -237,6 +404,7 @@ app.get('/sitemap.xml', (req, res) => {
   // Locale-agnostic base paths worth indexing (forms/report pages are left out).
   const paths = ['/', '/over'];
   for (const row of stmts.alleSlugs.all()) paths.push(`/instelling/${row.slug}`);
+  for (const row of stmts.alleBehandelaarSlugs.all()) paths.push(`/behandelaar/${row.slug}`);
 
   const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const urlFor = (loc, p) => `${SITE}/${loc}${p === '/' ? '' : p}`;

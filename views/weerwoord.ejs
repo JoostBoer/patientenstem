@@ -1,0 +1,54 @@
+<%- include('partials/head', { title: t('weerwoord.page_titel') }) %>
+
+<section class="page-head">
+  <div class="container narrow">
+    <p class="crumbs"><a href="<%= url('/behandelaar/' + behandelaar.slug) %>">← <%= behandelaar.naam %></a></p>
+    <h1 class="page-title"><%= t('weerwoord.page_titel') %></h1>
+    <% if (ingediend) { %>
+      <div class="banner banner-success"><%= t('weerwoord.ingediend') %></div>
+      <p><a href="<%= url('/behandelaar/' + behandelaar.slug) %>" class="btn btn-link"><%= t('melden.terug_link', { naam: behandelaar.naam }) %></a></p>
+    <% } else { %>
+      <p class="page-lead"><%= t('weerwoord.page_lead', { naam: behandelaar.naam }) %></p>
+    <% } %>
+  </div>
+</section>
+
+<% if (!ingediend) { %>
+<section class="form-sectie">
+  <div class="container narrow">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="banner banner-error"><%= error %></div>
+    <% } %>
+
+    <div class="banner banner-info"><%= t('weerwoord.verificatie_uitleg') %></div>
+
+    <blockquote class="review-quote">
+      <% review.ervaring.split(/\n\n+/).forEach(function(p) { %><p><%= p %></p><% }); %>
+    </blockquote>
+
+    <form method="post" action="<%= url('/review/' + review.id + '/weerwoord') %>" class="form">
+      <div class="veld">
+        <label for="tekst" class="veld-label"><%= t('weerwoord.tekst_label') %> <span class="vereist">*</span></label>
+        <textarea id="tekst" name="tekst" rows="7" required minlength="10" maxlength="8000"></textarea>
+        <p class="veld-hint"><%= t('weerwoord.tekst_hint') %></p>
+      </div>
+      <div class="veld">
+        <label for="identiteit" class="veld-label"><%= t('weerwoord.identiteit_label') %></label>
+        <textarea id="identiteit" name="identiteit" rows="3" maxlength="500" placeholder="<%= t('weerwoord.identiteit_placeholder') %>"></textarea>
+        <p class="veld-hint"><%= t('weerwoord.identiteit_hint') %></p>
+      </div>
+      <div class="veld">
+        <label for="contact_email" class="veld-label"><%= t('melden.email_label') %> <span class="muted"><%= t('melden.email_optioneel') %></span></label>
+        <input type="email" id="contact_email" name="contact_email" maxlength="200">
+        <p class="veld-hint"><%= t('weerwoord.email_hint') %></p>
+      </div>
+      <div class="acties">
+        <button type="submit" class="btn btn-primary"><%= t('weerwoord.submit') %></button>
+        <a href="<%= url('/behandelaar/' + behandelaar.slug) %>" class="btn btn-link"><%= t('melden.annuleer') %></a>
+      </div>
+    </form>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/foot') %>

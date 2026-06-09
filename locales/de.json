@@ -118,6 +118,29 @@
     "annuleer": "Abbrechen",
     "fout_te_kort": "Gib kurz an, warum diese Erfahrung deiner Meinung nach entfernt werden sollte (mind. 10 Zeichen)."
   },
+  "behandelaar": {
+    "sectie_titel": "Behandelnde bei dieser Einrichtung",
+    "sectie_sub": "Erfahrungen mit einer bestimmten behandelnden Person. Bleibe bei dem, was beruflich geschehen ist.",
+    "meta_desc": "Erfahrungen von Patienten mit {naam}. Lies oder teile eine Erfahrung, oder antworte als behandelnde Person.",
+    "big": "BIG-Nummer {nr}"
+  },
+  "weerwoord": {
+    "label": "Antwort der behandelnden Person",
+    "link": "Bist du diese behandelnde Person? Antworten",
+    "uitleg_behandelaar": "Wirst du hier beschrieben? Du kannst auf jede Erfahrung antworten und deine eigene Sicht schildern.",
+    "page_titel": "Recht auf Gegendarstellung",
+    "page_lead": "Antworte auf diese Erfahrung über {naam}. Deine Antwort wird unter der Erfahrung angezeigt, damit Leser beide Seiten sehen.",
+    "verificatie_uitleg": "Um Missbrauch zu verhindern, wird deine Antwort zuerst geprüft: wir verifizieren, dass du wirklich die genannte behandelnde Person bist, bevor sie sichtbar wird. Gib unten kurz an, wie wir das feststellen können.",
+    "tekst_label": "Deine Antwort",
+    "tekst_hint": "Schildere deine Sicht sachlich. Keine personenbezogenen Daten anderer.",
+    "identiteit_label": "Wie können wir feststellen, dass du das bist?",
+    "identiteit_placeholder": "Z. B. deine BIG-Nummer, eine E-Mail von einer beruflichen Domain oder eine andere überprüfbare Möglichkeit.",
+    "identiteit_hint": "Wird nicht veröffentlicht. Nur zur Überprüfung deiner Identität verwendet.",
+    "email_hint": "Falls wir dich wegen der Verifizierung kontaktieren müssen. Wird nicht veröffentlicht.",
+    "submit": "Antwort einreichen",
+    "ingediend": "Danke, deine Antwort wurde eingereicht. Wir verifizieren deine Identität und platzieren sie anschließend unter der Erfahrung.",
+    "fout_te_kort": "Schreibe mindestens ein paar Wörter für deine Antwort."
+  },
   "feedback": {
     "bubble_label": "Möchtest du diese Plattform besser machen?",
     "bubble_aria": "Feedback-Formular öffnen",

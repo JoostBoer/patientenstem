@@ -1,0 +1,8 @@
+<% (review.weerwoorden || []).forEach(function(w) { %>
+  <div class="weerwoord">
+    <p class="weerwoord-label"><%= t('weerwoord.label') %></p>
+    <div class="weerwoord-body">
+      <% w.tekst.split(/\n\n+/).forEach(function(para) { %><p><%= para %></p><% }); %>
+    </div>
+  </div>
+<% }); %>

@@ -118,6 +118,29 @@
     "annuleer": "Cancel",
     "fout_te_kort": "Briefly explain why this experience should be removed (min. 10 chars)."
   },
+  "behandelaar": {
+    "sectie_titel": "Clinicians at this provider",
+    "sectie_sub": "Experiences with a specific clinician. Keep it to what happened professionally.",
+    "meta_desc": "Patient experiences with {naam}. Read or share an experience, or reply as the clinician.",
+    "big": "BIG number {nr}"
+  },
+  "weerwoord": {
+    "label": "Reply from the clinician",
+    "link": "Are you this clinician? Reply",
+    "uitleg_behandelaar": "Are you described here? You can respond to any experience and give your own side of the story.",
+    "page_titel": "Right of reply",
+    "page_lead": "Respond to this experience about {naam}. Your reply is shown beneath the experience, so readers see both sides.",
+    "verificatie_uitleg": "To prevent misuse, your reply is checked first: we verify that you really are the named clinician before it becomes visible. Briefly tell us below how we can confirm that.",
+    "tekst_label": "Your reply",
+    "tekst_hint": "State your side of the story factually. No personal data about others.",
+    "identiteit_label": "How can we confirm this is you?",
+    "identiteit_placeholder": "E.g. your BIG number, an email from a professional domain, or another verifiable way.",
+    "identiteit_hint": "Not published. Only used to verify your identity.",
+    "email_hint": "In case we need to contact you about verification. Not published.",
+    "submit": "Submit reply",
+    "ingediend": "Thanks, your reply has been submitted. We verify your identity and then place it beneath the experience.",
+    "fout_te_kort": "Write at least a few words for your reply."
+  },
   "feedback": {
     "bubble_label": "Want to make this platform better?",
     "bubble_aria": "Open feedback form",
