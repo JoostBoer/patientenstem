@@ -26,6 +26,8 @@ app.use(i18n.middleware);
 
 app.locals.siteNaamFallback = 'Patiëntenstem';
 app.locals.GITHUB_URL = process.env.GITHUB_URL || 'https://github.com/';
+app.locals.SITE_URL = (process.env.SITE_URL || 'https://ourpatientvoice.org').replace(/\/$/, '');
+app.locals.DEFAULT_LOCALE = i18n.DEFAULT_LOCALE;
 
 const stmts = {
   alleInstellingen: db.prepare(`
@@ -36,6 +38,7 @@ const stmts = {
     ORDER BY i.naam
   `),
   instellingBySlug: db.prepare(`SELECT * FROM instellingen WHERE slug = ?`),
+  alleSlugs: db.prepare(`SELECT slug FROM instellingen ORDER BY naam`),
   reviewsForInstelling: db.prepare(`
     SELECT * FROM reviews
     WHERE instelling_id = ? AND status = 'gepubliceerd'
@@ -101,7 +104,7 @@ app.post('/instelling/:slug/schrijven', (req, res, next) => {
 
   const { rating, ervaring, rol, periode, contact_email, hp } = req.body;
 
-  if (hp && hp.trim() !== '') return res.redirect(`/instelling/${instelling.slug}?posted=1`);
+  if (hp && hp.trim() !== '') return res.redirect(`${res.locals.url('/instelling/' + instelling.slug)}?posted=1`);
 
   const t = res.locals.t;
   const errors = [];
@@ -128,7 +131,7 @@ app.post('/instelling/:slug/schrijven', (req, res, next) => {
     (contact_email || '').trim().slice(0, 200) || null,
   );
 
-  res.redirect(`/instelling/${instelling.slug}?posted=1`);
+  res.redirect(`${res.locals.url('/instelling/' + instelling.slug)}?posted=1`);
 });
 
 app.get('/review/:id/melden', (req, res, next) => {
@@ -172,9 +175,12 @@ app.post('/api/ai-rewrite', async (req, res) => {
   if (!apiKey) return res.status(503).json({ ok: false, error: 'no_api_key', hint: 'Set ANTHROPIC_API_KEY in .env to enable AI rewrites.' });
 
   const locale = res.locals.locale || 'nl';
-  const langInstr = locale === 'nl'
-    ? 'Schrijf in het Nederlands.'
-    : 'Write in English.';
+  const LANG_NAMES = {
+    nl: 'Dutch', en: 'English', de: 'German', fr: 'French', es: 'Spanish',
+    it: 'Italian', pt: 'Portuguese', ja: 'Japanese', zh: 'Simplified Chinese',
+    ar: 'Arabic', tr: 'Turkish', pl: 'Polish', ru: 'Russian', ko: 'Korean',
+  };
+  const langInstr = `Write in ${LANG_NAMES[locale] || 'the same language as the input'}.`;
 
   const system = [
     'You help patients with mental health treatment experiences write a more coherent version of their story.',
@@ -216,6 +222,48 @@ app.post('/api/ai-rewrite', async (req, res) => {
     console.error('AI rewrite failed:', e.message);
     res.status(500).json({ ok: false, error: 'server' });
   }
+});
+
+// robots.txt — allow everything, point crawlers at the sitemap.
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(`User-agent: *\nAllow: /\nSitemap: ${app.locals.SITE_URL}/sitemap.xml\n`);
+});
+
+// sitemap.xml — every indexable page in every locale, with hreflang alternates
+// so search engines understand the language variants belong together.
+app.get('/sitemap.xml', (req, res) => {
+  const SITE = app.locals.SITE_URL;
+  const locales = i18n.available;
+  // Locale-agnostic base paths worth indexing (forms/report pages are left out).
+  const paths = ['/', '/over'];
+  for (const row of stmts.alleSlugs.all()) paths.push(`/instelling/${row.slug}`);
+
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const urlFor = (loc, p) => `${SITE}/${loc}${p === '/' ? '' : p}`;
+
+  const entries = [];
+  for (const p of paths) {
+    for (const loc of locales) {
+      const alternates = locales
+        .map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${esc(urlFor(l, p))}"/>`)
+        .join('\n');
+      entries.push(
+        `  <url>\n` +
+        `    <loc>${esc(urlFor(loc, p))}</loc>\n` +
+        alternates + '\n' +
+        `    <xhtml:link rel="alternate" hreflang="x-default" href="${esc(urlFor(i18n.DEFAULT_LOCALE, p))}"/>\n` +
+        `  </url>`
+      );
+    }
+  }
+
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
+    entries.join('\n') + '\n' +
+    `</urlset>\n`;
+
+  res.type('application/xml').send(xml);
 });
 
 app.use((req, res) => {

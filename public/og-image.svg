@@ -1,0 +1,52 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Patiëntenstem">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#faf8f3"/>
+      <stop offset="100%" stop-color="#f3efe5"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffaf0"/>
+      <stop offset="34%" stop-color="#f9dca6"/>
+      <stop offset="68%" stop-color="#f0b15f" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#f0b15f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#728f6d"/>
+      <stop offset="100%" stop-color="#3f5a3f"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4a584"/>
+      <stop offset="100%" stop-color="#d2674a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- artwork on the right -->
+  <g transform="translate(890 315) scale(1.5)">
+    <circle cx="0" cy="-58" r="118" fill="url(#glow)"/>
+    <path fill="url(#heart)" d="M0 -86c-11-22-46-18-46 10 0 22 33 37 46 49 13-12 46-27 46-49 0-28-35-32-46-10z"/>
+    <g fill="url(#hand)" transform="translate(28 0) rotate(20)">
+      <path d="M-34 34c0-30 34-30 34-30s34 0 34 30c0 28-15 40-34 40s-34-12-34-40z"/>
+      <rect x="-30" y="-26" width="14" height="44" rx="7"/>
+      <rect x="-13" y="-34" width="14" height="52" rx="7"/>
+      <rect x="4" y="-32" width="14" height="50" rx="7"/>
+      <rect x="20" y="-22" width="14" height="40" rx="7"/>
+      <rect x="-52" y="6" width="13" height="34" rx="6.5" transform="rotate(-48 -45 23)"/>
+    </g>
+    <g fill="url(#hand)" transform="translate(-28 0) rotate(-20) scale(-1 1)">
+      <path d="M-34 34c0-30 34-30 34-30s34 0 34 30c0 28-15 40-34 40s-34-12-34-40z"/>
+      <rect x="-30" y="-26" width="14" height="44" rx="7"/>
+      <rect x="-13" y="-34" width="14" height="52" rx="7"/>
+      <rect x="4" y="-32" width="14" height="50" rx="7"/>
+      <rect x="20" y="-22" width="14" height="40" rx="7"/>
+      <rect x="-52" y="6" width="13" height="34" rx="6.5" transform="rotate(-48 -45 23)"/>
+    </g>
+  </g>
+
+  <!-- text on the left -->
+  <text x="90" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#1c1c1f">Patiëntenstem</text>
+  <text x="90" y="330" font-family="Helvetica, Arial, sans-serif" font-size="32" fill="#3a3a3f">Een stem voor mensen die in de</text>
+  <text x="90" y="374" font-family="Helvetica, Arial, sans-serif" font-size="32" fill="#3a3a3f">psychiatrie behandeld worden.</text>
+  <text x="90" y="470" font-family="Helvetica, Arial, sans-serif" font-size="24" fill="#3f5a3f">ourpatientvoice.org · open source · 11 talen</text>
+</svg>

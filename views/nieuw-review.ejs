@@ -2,7 +2,7 @@
 
 <section class="page-head soft">
   <div class="container narrow">
-    <p class="crumbs"><a href="/instelling/<%= instelling.slug %>">← <%= instelling.naam %></a></p>
+    <p class="crumbs"><a href="<%= url('/instelling/' + instelling.slug) %>">← <%= instelling.naam %></a></p>
     <h1 class="page-title"><%= t('nieuw.page_titel') %></h1>
     <p class="page-lead"><%= t('nieuw.page_lead', { naam: instelling.naam }) %></p>
   </div>
@@ -18,7 +18,7 @@
       </div>
     <% } %>
 
-    <form method="post" action="/instelling/<%= instelling.slug %>/schrijven" class="form simple-form" id="reviewForm">
+    <form method="post" action="<%= url('/instelling/' + instelling.slug + '/schrijven') %>" class="form simple-form" id="reviewForm">
 
       <div class="big-veld">
         <label for="ervaring" class="big-label"><%= t('nieuw.ervaring_label') %></label>
@@ -110,7 +110,7 @@
 
       <div class="acties">
         <button type="submit" class="btn btn-primary btn-lg"><%= t('nieuw.submit') %></button>
-        <a href="/instelling/<%= instelling.slug %>" class="btn btn-link"><%= t('nieuw.annuleer') %></a>
+        <a href="<%= url('/instelling/' + instelling.slug) %>" class="btn btn-link"><%= t('nieuw.annuleer') %></a>
       </div>
     </form>
   </div>

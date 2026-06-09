@@ -86,12 +86,46 @@ h1, h2, h3 {
 /* ---------- Hero ---------- */
 
 .hero {
-  padding: 96px 0 80px;
+  padding: 64px 0 80px;
   border-bottom: 1px solid var(--line);
   text-align: center;
   background: linear-gradient(180deg, var(--bg) 0%, #fbf6ec 100%);
 }
 .hero-inner { max-width: 720px; }
+
+/* Hero illustration: two hands cradling a glowing light */
+.hero-art {
+  width: clamp(220px, 56%, 360px);
+  margin: 0 auto 14px;
+}
+.hero-svg { display: block; width: 100%; height: auto; }
+.hero-glow {
+  transform-origin: 220px 138px;
+  animation: opv-pulse 5.5s ease-in-out infinite;
+}
+.hero-rays {
+  transform-origin: 220px 130px;
+  animation: opv-rays 5.5s ease-in-out infinite;
+}
+.hero-heart {
+  transform-origin: 220px 150px;
+  animation: opv-float 5.5s ease-in-out infinite;
+}
+@keyframes opv-pulse {
+  0%, 100% { transform: scale(1); opacity: .92; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes opv-rays {
+  0%, 100% { opacity: .45; }
+  50% { opacity: .8; }
+}
+@keyframes opv-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow, .hero-rays, .hero-heart { animation: none; }
+}
 .hero-eyebrow {
   font-size: 12px;
   text-transform: uppercase;

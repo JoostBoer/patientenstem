@@ -18,7 +18,8 @@ If you want to help — by adding a provider, translating a language, fixing a b
 - **Microphone input** in the form and feedback widget (Web Speech API, no server transcription, NL/EN voice recognition built in, more via browser)
 - **AI rewrite** that takes a written or spoken story and proposes a more coherent version while keeping all content, names and emotional weight (Anthropic API)
 - **Floating feedback bubble** on every page so users can suggest improvements
-- **11 languages** out of the box (NL, EN, DE, FR, ES, IT, PT, JA, ZH, AR, PL, TR — auto-translated from Dutch via Anthropic and reviewable as JSON files)
+- **11 languages** out of the box (NL, EN, DE, FR, ES, IT, PT, JA, ZH, AR, TR — auto-translated from Dutch via Anthropic and reviewable as JSON files)
+- **SEO-friendly multilingual URLs**: every language has its own crawlable path (`/nl/`, `/de/`, `/fr/`, …) with `hreflang` alternates, a `canonical` tag, and a generated `sitemap.xml`
 - No accounts, no tracking, no advertising, no external scripts beyond Google Fonts (removable)
 - Honeypot anti-spam, takedown request flow for moderation
 
@@ -56,6 +57,22 @@ npm run seed
 ## Adding a provider
 
 Edit `seeds/instellingen.json`, add a row, send a PR. Or open an issue. Once merged, the provider appears on [ourpatientvoice.org](https://ourpatientvoice.org/).
+
+## URLs & internationalisation
+
+The language lives in the URL path, so every translation is its own indexable page:
+
+```
+/nl            /nl/over      /nl/instelling/<slug>
+/de  /fr  /es  /en  …
+```
+
+- `/` (and any un-prefixed path) 302-redirects to the visitor's preferred language — from a `?lang=` override, a `lang` cookie, or the `Accept-Language` header, falling back to `nl`.
+- Each page emits a `<link rel="canonical">`, one `hreflang` alternate per language, and an `hreflang="x-default"`.
+- `/sitemap.xml` lists every page in every language with alternates; `/robots.txt` points crawlers to it.
+- Set `SITE_URL` in `.env` (default `https://ourpatientvoice.org`) so canonical/sitemap/Open Graph URLs are absolute and correct.
+
+In templates, build internal links with the locale helpers instead of hard-coding paths: `url('/over')` → `/nl/over` for the current language, and `altUrl('de', basePath)` → the same page in German.
 
 ## Adding a language
 
