@@ -2,11 +2,11 @@
 
 <section class="page-head">
   <div class="container narrow">
-    <p class="crumbs"><a href="/instelling/<%= instelling.slug %>">← <%= instelling.naam %></a></p>
+    <p class="crumbs"><a href="<%= url('/instelling/' + instelling.slug) %>">← <%= instelling.naam %></a></p>
     <h1 class="page-title"><%= t('melden.page_titel') %></h1>
     <% if (gemeld) { %>
       <div class="banner banner-success"><%= t('melden.gemeld') %></div>
-      <p><a href="/instelling/<%= instelling.slug %>" class="btn btn-link"><%= t('melden.terug_link', { naam: instelling.naam }) %></a></p>
+      <p><a href="<%= url('/instelling/' + instelling.slug) %>" class="btn btn-link"><%= t('melden.terug_link', { naam: instelling.naam }) %></a></p>
     <% } else { %>
       <p class="page-lead"><%= t('melden.page_lead') %></p>
     <% } %>
@@ -19,7 +19,7 @@
     <% if (typeof error !== 'undefined' && error) { %>
       <div class="banner banner-error"><%= error %></div>
     <% } %>
-    <form method="post" action="/review/<%= review.id %>/melden" class="form">
+    <form method="post" action="<%= url('/review/' + review.id + '/melden') %>" class="form">
       <div class="veld">
         <label for="reden" class="veld-label"><%= t('melden.reden_label') %> <span class="vereist">*</span></label>
         <textarea id="reden" name="reden" rows="6" required minlength="10" maxlength="2000"></textarea>
@@ -31,7 +31,7 @@
       </div>
       <div class="acties">
         <button type="submit" class="btn btn-primary"><%= t('melden.submit') %></button>
-        <a href="/instelling/<%= instelling.slug %>" class="btn btn-link"><%= t('melden.annuleer') %></a>
+        <a href="<%= url('/instelling/' + instelling.slug) %>" class="btn btn-link"><%= t('melden.annuleer') %></a>
       </div>
     </form>
   </div>

@@ -2,6 +2,9 @@
 
 <section class="hero">
   <div class="container narrow hero-inner">
+    <div class="hero-art" aria-hidden="false">
+      <%- include('partials/hero-art') %>
+    </div>
     <p class="hero-eyebrow"><%= t('home.eyebrow') %></p>
     <h1 class="hero-title"><%= t('home.titel') %></h1>
     <p class="hero-lead"><%= t('home.lead') %></p>
@@ -17,7 +20,7 @@
     <ul class="kaarten">
       <% instellingen.forEach(function(i) { %>
         <li class="kaart">
-          <a href="/instelling/<%= i.slug %>" class="kaart-link">
+          <a href="<%= url('/instelling/' + i.slug) %>" class="kaart-link">
             <h3 class="kaart-naam"><%= i.naam %></h3>
             <p class="kaart-meta">
               <% if (i.plaats) { %><span><%= i.plaats %></span><% } %>

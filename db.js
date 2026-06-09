@@ -25,7 +25,8 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    instelling_id INTEGER NOT NULL,
+    instelling_id INTEGER,
+    behandelaar_id INTEGER,
     rating INTEGER CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
     titel TEXT,
     ervaring TEXT NOT NULL,
@@ -49,18 +50,58 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
   );
+
+  -- Clinicians (BIG-registered professionals). Professional fields ONLY, by design:
+  -- name + role + optional BIG number + the provider they work at. No private-life data.
+  -- Entries are added deliberately (seed/PR), never created from the public form,
+  -- so the platform cannot be used to spin up a profile of an arbitrary person.
+  CREATE TABLE IF NOT EXISTS behandelaars (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    naam TEXT NOT NULL,
+    functie TEXT,
+    big_nummer TEXT,
+    instelling_id INTEGER,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (instelling_id) REFERENCES instellingen(id) ON DELETE SET NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_behandelaars_instelling ON behandelaars(instelling_id);
+
+  -- Right of reply: a clinician's response to a specific review. Held in a
+  -- moderation queue ('ingediend') with an identity note, published only after a
+  -- maintainer verifies the responder really is that clinician.
+  CREATE TABLE IF NOT EXISTS weerwoorden (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    review_id INTEGER NOT NULL,
+    tekst TEXT NOT NULL,
+    identiteit_notitie TEXT,
+    contact_email TEXT,
+    status TEXT NOT NULL DEFAULT 'ingediend',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_weerwoorden_review ON weerwoorden(review_id);
+  CREATE INDEX IF NOT EXISTS idx_weerwoorden_status ON weerwoorden(status);
 `);
 
-// Migrate: if existing reviews table had NOT NULL rating, rebuild it
+// Migrate older reviews tables to the current shape: optional rating, optional
+// instelling_id, and a behandelaar_id column (a review targets an institution
+// and/or a clinician). Rebuild only when something is actually out of date.
 try {
   const tableInfo = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='reviews'").get();
-  if (tableInfo && tableInfo.sql && /rating INTEGER NOT NULL/.test(tableInfo.sql)) {
+  const sql = (tableInfo && tableInfo.sql) || '';
+  const needsRebuild =
+    /rating INTEGER NOT NULL/.test(sql) ||
+    /instelling_id INTEGER NOT NULL/.test(sql) ||
+    !/behandelaar_id/.test(sql);
+  if (sql && needsRebuild) {
     db.exec(`
       BEGIN;
       ALTER TABLE reviews RENAME TO reviews_old;
       CREATE TABLE reviews (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        instelling_id INTEGER NOT NULL,
+        instelling_id INTEGER,
+        behandelaar_id INTEGER,
         rating INTEGER CHECK (rating IS NULL OR (rating >= 1 AND rating <= 5)),
         titel TEXT,
         ervaring TEXT NOT NULL,
@@ -71,16 +112,18 @@ try {
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (instelling_id) REFERENCES instellingen(id) ON DELETE CASCADE
       );
-      INSERT INTO reviews SELECT * FROM reviews_old;
+      INSERT INTO reviews (id, instelling_id, rating, titel, ervaring, rol, periode, contact_email, status, created_at)
+        SELECT id, instelling_id, rating, titel, ervaring, rol, periode, contact_email, status, created_at FROM reviews_old;
       DROP TABLE reviews_old;
       CREATE INDEX IF NOT EXISTS idx_reviews_instelling ON reviews(instelling_id);
       CREATE INDEX IF NOT EXISTS idx_reviews_status ON reviews(status);
       COMMIT;
     `);
-    console.log('Migrated reviews table: rating is now optional');
+    console.log('Migrated reviews table to current schema');
   }
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_reviews_behandelaar ON reviews(behandelaar_id)`);
 } catch (e) {
-  console.warn('Migration check failed:', e.message);
+  console.warn('Reviews migration failed:', e.message);
 }
 
 function seedInstellingen() {
@@ -106,10 +149,46 @@ function seedInstellingen() {
   return items.length;
 }
 
+// Clinicians are seeded from seeds/behandelaars.json when present. The file ships
+// empty on purpose: real people are added deliberately, via a reviewed PR.
+function seedBehandelaars() {
+  const seedPath = path.join(__dirname, 'seeds', 'behandelaars.json');
+  if (!fs.existsSync(seedPath)) return 0;
+  const items = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  if (!Array.isArray(items) || items.length === 0) return 0;
+
+  const findInstelling = db.prepare(`SELECT id FROM instellingen WHERE slug = ?`);
+  const insert = db.prepare(`
+    INSERT INTO behandelaars (slug, naam, functie, big_nummer, instelling_id)
+    VALUES (@slug, @naam, @functie, @big_nummer, @instelling_id)
+    ON CONFLICT(slug) DO UPDATE SET
+      naam = excluded.naam,
+      functie = excluded.functie,
+      big_nummer = excluded.big_nummer,
+      instelling_id = excluded.instelling_id
+  `);
+
+  const tx = db.transaction((rows) => {
+    for (const row of rows) {
+      const instelling = row.instelling_slug ? findInstelling.get(row.instelling_slug) : null;
+      insert.run({
+        slug: row.slug,
+        naam: row.naam,
+        functie: row.functie || null,
+        big_nummer: row.big_nummer || null,
+        instelling_id: instelling ? instelling.id : null,
+      });
+    }
+  });
+  tx(items);
+  return items.length;
+}
+
 if (require.main === module && process.argv.includes('--seed')) {
   const n = seedInstellingen();
-  console.log(`Seeded ${n} instellingen into ${DB_PATH}`);
+  const m = seedBehandelaars();
+  console.log(`Seeded ${n} instellingen and ${m} behandelaars into ${DB_PATH}`);
   process.exit(0);
 }
 
-module.exports = { db, seedInstellingen };
+module.exports = { db, seedInstellingen, seedBehandelaars };

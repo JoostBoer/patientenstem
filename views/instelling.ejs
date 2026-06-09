@@ -2,7 +2,7 @@
 
 <section class="page-head">
   <div class="container">
-    <p class="crumbs"><a href="/">← <%= t('instelling.terug') %></a></p>
+    <p class="crumbs"><a href="<%= url('/') %>">← <%= t('instelling.terug') %></a></p>
     <h1 class="page-title"><%= instelling.naam %></h1>
     <p class="page-meta">
       <% if (instelling.plaats) { %><span><%= instelling.plaats %></span><% } %>
@@ -19,7 +19,7 @@
       <% if (reviews.length > 0) { %>
         <span class="rating-large">★ <%= gemiddelde %></span>
         <span class="muted"><%= reviews.length === 1 ? t('home.kaart_aantal_een') : t('home.kaart_aantal_meer', { n: reviews.length }) %></span>
-        <a href="/instelling/<%= instelling.slug %>/schrijven" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a>
+        <a href="<%= url('/instelling/' + instelling.slug + '/schrijven') %>" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a>
       <% } %>
     </div>
   </div>
@@ -39,7 +39,7 @@
       <div class="leeg">
         <p><%= t('instelling.geen_ervaringen_titel', { naam: instelling.naam }) %></p>
         <p class="muted"><%= t('instelling.geen_ervaringen_sub') %></p>
-        <p><a href="/instelling/<%= instelling.slug %>/schrijven" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a></p>
+        <p><a href="<%= url('/instelling/' + instelling.slug + '/schrijven') %>" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a></p>
       </div>
     <% } else { %>
       <ul class="review-lijst">
@@ -64,11 +64,39 @@
             <p class="review-foot muted">
               <time datetime="<%= r.created_at %>"><%= r.created_at.slice(0, 10) %></time>
             </p>
+            <%- include('partials/weerwoorden', { review: r }) %>
           </li>
         <% }); %>
       </ul>
     <% } %>
   </div>
 </section>
+
+<% if (behandelaars && behandelaars.length) { %>
+<section class="behandelaars">
+  <div class="container">
+    <h2 class="section-title"><%= t('behandelaar.sectie_titel') %></h2>
+    <p class="section-sub"><%= t('behandelaar.sectie_sub') %></p>
+    <ul class="kaarten">
+      <% behandelaars.forEach(function(b) { %>
+        <li class="kaart">
+          <a href="<%= url('/behandelaar/' + b.slug) %>" class="kaart-link">
+            <h3 class="kaart-naam"><%= b.naam %></h3>
+            <% if (b.functie) { %><p class="kaart-meta"><span><%= b.functie %></span></p><% } %>
+            <p class="kaart-stat">
+              <% if (b.aantal_reviews && b.aantal_reviews > 0) { %>
+                <% if (b.gemiddelde) { %><span class="rating">★ <%= b.gemiddelde %></span><% } %>
+                <span class="muted"><%= b.aantal_reviews === 1 ? t('home.kaart_aantal_een') : t('home.kaart_aantal_meer', { n: b.aantal_reviews }) %></span>
+              <% } else { %>
+                <span class="muted"><%= t('home.kaart_geen_ervaringen') %></span>
+              <% } %>
+            </p>
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+</section>
+<% } %>
 
 <%- include('partials/foot') %>

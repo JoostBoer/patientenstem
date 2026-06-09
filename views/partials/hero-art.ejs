@@ -1,0 +1,54 @@
+<svg class="hero-svg" viewBox="0 0 440 300" role="img" aria-labelledby="heroArtTitle" xmlns="http://www.w3.org/2000/svg">
+  <title id="heroArtTitle"><%= t('home.art_alt') %></title>
+  <defs>
+    <radialGradient id="opvGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffaf0"/>
+      <stop offset="32%" stop-color="#f9dca6"/>
+      <stop offset="66%" stop-color="#f0b15f" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#f0b15f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="opvHand" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#728f6d"/>
+      <stop offset="100%" stop-color="#3f5a3f"/>
+    </linearGradient>
+    <linearGradient id="opvHeart" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4a584"/>
+      <stop offset="100%" stop-color="#d2674a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- soft radiant glow -->
+  <circle class="hero-glow" cx="220" cy="138" r="118" fill="url(#opvGlow)"/>
+
+  <!-- light rays -->
+  <g class="hero-rays" stroke="#eaa94f" stroke-width="3" stroke-linecap="round">
+    <line x1="220" y1="34" x2="220" y2="58"/>
+    <line x1="156" y1="52" x2="169" y2="72"/>
+    <line x1="284" y1="52" x2="271" y2="72"/>
+    <line x1="118" y1="104" x2="140" y2="113"/>
+    <line x1="322" y1="104" x2="300" y2="113"/>
+  </g>
+
+  <!-- the light being held: a heart -->
+  <path class="hero-heart" fill="url(#opvHeart)" d="M220 110c-11-22-46-18-46 10 0 22 33 37 46 49 13-12 46-27 46-49 0-28-35-32-46-10z"/>
+
+  <!-- two cupped hands cradling the light -->
+  <!-- right hand -->
+  <g fill="url(#opvHand)" transform="translate(248 196) rotate(20)">
+    <path d="M-34 34c0-30 34-30 34-30s34 0 34 30c0 28-15 40-34 40s-34-12-34-40z"/>
+    <rect x="-30" y="-26" width="14" height="44" rx="7"/>
+    <rect x="-13" y="-34" width="14" height="52" rx="7"/>
+    <rect x="4" y="-32" width="14" height="50" rx="7"/>
+    <rect x="20" y="-22" width="14" height="40" rx="7"/>
+    <rect x="-52" y="6" width="13" height="34" rx="6.5" transform="rotate(-48 -45 23)"/>
+  </g>
+  <!-- left hand (mirrored) -->
+  <g fill="url(#opvHand)" transform="translate(192 196) rotate(-20) scale(-1 1)">
+    <path d="M-34 34c0-30 34-30 34-30s34 0 34 30c0 28-15 40-34 40s-34-12-34-40z"/>
+    <rect x="-30" y="-26" width="14" height="44" rx="7"/>
+    <rect x="-13" y="-34" width="14" height="52" rx="7"/>
+    <rect x="4" y="-32" width="14" height="50" rx="7"/>
+    <rect x="20" y="-22" width="14" height="40" rx="7"/>
+    <rect x="-52" y="6" width="13" height="34" rx="6.5" transform="rotate(-48 -45 23)"/>
+  </g>
+</svg>

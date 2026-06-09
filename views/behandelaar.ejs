@@ -1,0 +1,75 @@
+<%- include('partials/head', { title: behandelaar.naam }) %>
+
+<section class="page-head">
+  <div class="container">
+    <p class="crumbs">
+      <% if (instelling) { %>
+        <a href="<%= url('/instelling/' + instelling.slug) %>">← <%= instelling.naam %></a>
+      <% } else { %>
+        <a href="<%= url('/') %>">← <%= t('instelling.terug') %></a>
+      <% } %>
+    </p>
+    <h1 class="page-title"><%= behandelaar.naam %></h1>
+    <p class="page-meta">
+      <% if (behandelaar.functie) { %><span><%= behandelaar.functie %></span><% } %>
+      <% if (instelling) { %><span class="dot">·</span><span><%= instelling.naam %></span><% } %>
+      <% if (behandelaar.big_nummer) { %><span class="dot">·</span><span><%= t('behandelaar.big', { nr: behandelaar.big_nummer }) %></span><% } %>
+    </p>
+
+    <div class="page-summary">
+      <% if (reviews.length > 0) { %>
+        <% if (gemiddelde) { %><span class="rating-large">★ <%= gemiddelde %></span><% } %>
+        <span class="muted"><%= reviews.length === 1 ? t('home.kaart_aantal_een') : t('home.kaart_aantal_meer', { n: reviews.length }) %></span>
+      <% } %>
+      <a href="<%= url('/behandelaar/' + behandelaar.slug + '/schrijven') %>" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a>
+    </div>
+  </div>
+</section>
+
+<% if (posted) { %>
+  <div class="container">
+    <div class="banner banner-success"><%= t('instelling.geplaatst_banner') %></div>
+  </div>
+<% } %>
+
+<section class="reviews">
+  <div class="container">
+    <% if (reviews.length === 0) { %>
+      <div class="leeg">
+        <p><%= t('instelling.geen_ervaringen_titel', { naam: behandelaar.naam }) %></p>
+        <p class="muted"><%= t('instelling.geen_ervaringen_sub') %></p>
+        <p><a href="<%= url('/behandelaar/' + behandelaar.slug + '/schrijven') %>" class="btn btn-primary"><%= t('instelling.schrijf_knop') %></a></p>
+      </div>
+    <% } else { %>
+      <p class="weerwoord-uitleg muted"><%= t('weerwoord.uitleg_behandelaar') %></p>
+      <ul class="review-lijst">
+        <% reviews.forEach(function(r) { %>
+          <li class="review">
+            <div class="review-head">
+              <% if (r.rating) { %><span class="rating">★ <%= r.rating %></span><% } %>
+              <% if (r.titel) { %><h3 class="review-titel"><%= r.titel %></h3><% } %>
+            </div>
+            <% if (r.rol || r.periode) { %>
+              <p class="review-meta">
+                <% if (r.rol) { %><span><%= r.rol %></span><% } %>
+                <% if (r.rol && r.periode) { %><span class="dot">·</span><% } %>
+                <% if (r.periode) { %><span><%= r.periode %></span><% } %>
+              </p>
+            <% } %>
+            <div class="review-body">
+              <% r.ervaring.split(/\n\n+/).forEach(function(p) { %><p><%= p %></p><% }); %>
+            </div>
+            <p class="review-foot muted">
+              <time datetime="<%= r.created_at %>"><%= r.created_at.slice(0, 10) %></time>
+              <span class="dot">·</span>
+              <a href="<%= url('/review/' + r.id + '/weerwoord') %>"><%= t('weerwoord.link') %></a>
+            </p>
+            <%- include('partials/weerwoorden', { review: r }) %>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

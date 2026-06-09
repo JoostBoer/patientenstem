@@ -19,6 +19,7 @@
     "titel": "Een stem voor mensen die in de psychiatrie behandeld worden.",
     "lead": "Als je opgenomen bent geweest, een crisismaatregel of zorgmachtiging hebt meegemaakt, of in zorg zit bij een GGZ-instelling, dan ken je verhalen die zelden gehoord worden. Hier kun je ze opschrijven. Anoniem. Met je stem of met je vingers. Voor andere patiënten. En, op termijn, voor behandelaars die willen luisteren.",
     "meta": "Open source. Geen advertenties. Geen tracking. Niet van een instelling.",
+    "art_alt": "Twee handen die voorzichtig een warm, gloeiend licht dragen.",
     "sectie_titel": "Instellingen",
     "sectie_sub": "Zoek een instelling om een ervaring te lezen of te schrijven.",
     "kaart_geen_ervaringen": "Nog geen ervaringen, wees de eerste",
@@ -116,6 +117,29 @@
     "submit": "Melding versturen",
     "annuleer": "Annuleren",
     "fout_te_kort": "Geef kort aan waarom deze ervaring volgens jou weg moet (min. 10 tekens)."
+  },
+  "behandelaar": {
+    "sectie_titel": "Behandelaars bij deze instelling",
+    "sectie_sub": "Ervaringen met een specifieke behandelaar. Houd het bij wat er beroepsmatig is gebeurd.",
+    "meta_desc": "Ervaringen van patiënten met {naam}. Lees of deel een ervaring, of geef als behandelaar weerwoord.",
+    "big": "BIG-nummer {nr}"
+  },
+  "weerwoord": {
+    "label": "Weerwoord van de behandelaar",
+    "link": "Ben jij deze behandelaar? Geef weerwoord",
+    "uitleg_behandelaar": "Word je hier beschreven? Je kunt op elke ervaring reageren en je eigen kant van het verhaal geven.",
+    "page_titel": "Weerwoord geven",
+    "page_lead": "Reageer op deze ervaring over {naam}. Jouw reactie wordt onder de ervaring getoond, zodat lezers beide kanten zien.",
+    "verificatie_uitleg": "Om misbruik te voorkomen wordt je weerwoord eerst gecontroleerd: we verifiëren dat je echt de genoemde behandelaar bent voordat het zichtbaar wordt. Geef hieronder kort aan hoe we dat kunnen vaststellen.",
+    "tekst_label": "Jouw weerwoord",
+    "tekst_hint": "Geef feitelijk je kant van het verhaal. Geen persoonlijke gegevens van anderen.",
+    "identiteit_label": "Hoe kunnen we vaststellen dat jij dit bent?",
+    "identiteit_placeholder": "Bijv. je BIG-nummer, een e-mail vanaf een zakelijk domein, of een andere verifieerbare manier.",
+    "identiteit_hint": "Wordt niet gepubliceerd. Alleen gebruikt om je identiteit te verifiëren.",
+    "email_hint": "Voor als we contact moeten opnemen over de verificatie. Wordt niet gepubliceerd.",
+    "submit": "Weerwoord indienen",
+    "ingediend": "Bedankt, je weerwoord is ingediend. We verifiëren je identiteit en plaatsen het daarna onder de ervaring.",
+    "fout_te_kort": "Schrijf minstens een paar woorden voor je weerwoord."
   },
   "feedback": {
     "bubble_label": "Wil je dit platform beter maken?",
